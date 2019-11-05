@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spike1", "Spike1\Spike1.csproj", "{DA20E1E3-67C8-4298-8325-8D0A219A14B8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3531A8FC-46A5-4EE3-9587-7E783BA03B44} = {3531A8FC-46A5-4EE3-9587-7E783BA03B44}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpikeNeyroNet", "SpikeNeyroNet\SpikeNeyroNet.csproj", "{3531A8FC-46A5-4EE3-9587-7E783BA03B44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA20E1E3-67C8-4298-8325-8D0A219A14B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA20E1E3-67C8-4298-8325-8D0A219A14B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA20E1E3-67C8-4298-8325-8D0A219A14B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA20E1E3-67C8-4298-8325-8D0A219A14B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3531A8FC-46A5-4EE3-9587-7E783BA03B44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3531A8FC-46A5-4EE3-9587-7E783BA03B44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3531A8FC-46A5-4EE3-9587-7E783BA03B44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3531A8FC-46A5-4EE3-9587-7E783BA03B44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BECC0005-758C-43C7-9F5D-F0D73DFE92A7}
+	EndGlobalSection
+EndGlobal
