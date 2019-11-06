@@ -33,7 +33,7 @@ namespace Spike1
             Directory.CreateDirectory(path + "/patterns");
             for (int k = 0; k<200; k++)
             {
-                string  sourcePath = "../../../contest_data/baby_cry/";
+                string  sourcePath = "../../../../contest_data/baby_cry/";
                 WavReader wav = new WavReader(sourcePath+k+".wav");
 
                 List<double> max_spect = new List<double>();
@@ -50,6 +50,7 @@ namespace Spike1
                 inputPattern.Mutate(ctx => ctx.Fill(Rgba32.WhiteSmoke));
                 for (int i = 0; i < dataFramesCount; i++)
                 {
+
                     Complex[] frame1 = new Complex[framesize];
                     Complex[] frame2 = new Complex[framesize];
 

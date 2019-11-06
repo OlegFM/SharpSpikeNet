@@ -21,7 +21,7 @@ namespace Spike1
         public char[] subchunk2Id { get; private set; }
         public uint subchunk2Size { get; private set; }
 
-        public List<byte> rawdata = new List<byte>();
+        byte[] rawdata = new byte[1];
         public WavReader(string filename)
         {
             System.IO.FileStream file = System.IO.File.OpenRead(filename);
@@ -79,8 +79,8 @@ namespace Spike1
             subchunk2Size = BitConverter.ToUInt32(arr, 0);
 
             arr = new byte[file.Length - 44];
-            file.Read(arr, 0, (UInt16)subchunk2Size);
-            rawdata = arr.ToList();
+            file.Read(arr, 0, (int)subchunk2Size);
+            rawdata = arr;
 
             file.Close();
         }
@@ -88,7 +88,7 @@ namespace Spike1
         public Int16[] GetData()
         {
             List<Int16> data = new List<Int16>();
-            for (int i = 0; i<rawdata.Count; i++)
+            for (int i = 0; i<rawdata.Length; i++)
             {
                 if (blockAlign ==2)
                 {
