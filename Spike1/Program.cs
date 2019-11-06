@@ -18,9 +18,9 @@ namespace Spike1
         static void Main(string[] args)
         {
             int framesize = 160;
-            int firstLayerLength = 50;
+            int firstLayerLength = 30;
             var maxAmp = 50000;
-            var dbNoize = -30;
+            var dbNoize = -50;
             int maxPowerLevel = (int)Math.Floor(-dbNoize / 1.00);
 
             long timestamp = 100001;
@@ -136,7 +136,7 @@ namespace Spike1
                     }
                     patternCol++;
                     framenumb++;
-                    Console.WriteLine(framenumb);
+                    Console.WriteLine(i + " of " + dataFramesCount);
                     Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
                     if (hasSignal) image.Save(path+"/file"+k+"/"+ framenumb + ".png");
                 }

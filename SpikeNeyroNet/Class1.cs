@@ -237,6 +237,7 @@ namespace SpikeNeyroNetGen1
         public void CpuCompute(bool[] inputs, long timestamp)
         {
             outputs.Clear();
+            bool wasActivated = false;
 
             if (killall.Item1 == true && killall.Item2 < timestamp - tInhibit)
             {
@@ -253,6 +254,7 @@ namespace SpikeNeyroNetGen1
                         if (neyron.output == true && killall.Item1 == false)
                         {
                             killall = new Tuple<bool, long>(true, timestamp);
+                            wasActivated = true;
                         }
                         outputs.Add(neyron.output);
                     }
@@ -263,15 +265,18 @@ namespace SpikeNeyroNetGen1
                 }
                 
             }
-            for (int i = 0; i < outputs.Count; i++)
+            if (wasActivated)
             {
-                if (outputs[i] == true)
+                for (int i = 0; i < outputs.Count; i++)
                 {
-                    neyrons[i].WeightsUpdate(false);
-                }
-                else
-                {
-                    neyrons[i].WeightsUpdate(false);
+                    if (outputs[i] == true)
+                    {
+                        neyrons[i].WeightsUpdate(false);
+                    }
+                    else
+                    {
+                        neyrons[i].WeightsUpdate(true);
+                    }
                 }
             }
         }
