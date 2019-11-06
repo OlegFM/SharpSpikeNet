@@ -118,9 +118,7 @@ namespace SpikeNeyroNetGen1
             foreach (var weight in temp.Select((value, index) => new { value, index }))
             {
                 double newWeight = 0;
-                if (!inhibit)
-                {
-                    if (weight.value.Item2 <= lastTime && weight.value.Item2 > (lastTime - tLTP))
+                    if (weight.value.Item2 <= lastTime && weight.value.Item2 > (lastTime - tLTP) && !inhibit)
                     {
                         newWeight = weight.value.Item1 + aInc * Math.Exp(-bInc * (weight.value.Item1 - wMin) / (wMax - wMin));
                     }
@@ -131,7 +129,6 @@ namespace SpikeNeyroNetGen1
                     if (newWeight < wMin) newWeight = wMin;
                     if (newWeight > wMax) newWeight = wMax;
                     weights[weight.index] = new Tuple<double, long>(newWeight, weight.value.Item2);
-                }
             }
         }
 
@@ -191,11 +188,11 @@ namespace SpikeNeyroNetGen1
         private List<Neyron> neyrons = new List<Neyron>();
         private long lasttime = 0;
 
-        public long tInhibit { get; set; } = 200;
+        public long tInhibit { get; set; } = 300;
         public long tRef { get; set; } = 10000;
-        public int timeLeak {get; set;}= 500;
-        public double iTreshold {get; set;}= 1000000;
-        public long tLTP {get; set;}= 300;
+        public int timeLeak {get; set;}= 700;
+        public double iTreshold {get; set;}= 100000;
+        public long tLTP {get; set;}= 400;
         public double aInc {get; set;}= 100;
         public double aDec {get; set;}= 55;
         public double bInc {get; set;}= 0;
@@ -274,7 +271,7 @@ namespace SpikeNeyroNetGen1
                 }
                 else
                 {
-                    neyrons[i].WeightsUpdate(true);
+                    neyrons[i].WeightsUpdate(false);
                 }
             }
         }

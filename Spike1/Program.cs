@@ -17,9 +17,14 @@ namespace Spike1
     {
         static void Main(string[] args)
         {
+            int framesize = 160;
+            var maxAmp = 50000;
+            var dbNoize = -30;
+            int maxPowerLevel = (int)Math.Floor(-dbNoize / 1.00);
+
             long timestamp = 100001;
             NeyroNet net = new NeyroNet();
-            net.AddLayer(new NeyroLayer(100, 57600));
+            net.AddLayer(new NeyroLayer(100, framesize*maxPowerLevel));
 
             int patternCol = 0;
             int patternCount = 0;
@@ -27,36 +32,31 @@ namespace Spike1
             Directory.CreateDirectory(path + "/patterns");
             for (int k = 0; k<200; k++)
             {
-                string  sourcePath = "C:/Users/olege/source/repos/Spike1/contest_data/baby_cry/";
+                string  sourcePath = "../../../contest_data/baby_cry/";
                 WavReader wav = new WavReader(sourcePath+k+".wav");
 
                 List<double> max_spect = new List<double>();
 
                 Int16[] data = wav.GetData();
-                int dataFramesCount = data.Length / 240;
+                int dataFramesCount = data.Length / framesize;
 
                 int framenumb = 0;
-                var animatedImage = new Image<Rgba32>(240, 240);
                 Directory.CreateDirectory(path + "/file" + k);
-                animatedImage.Mutate(ctx => ctx.Fill(Rgba32.White));
-                var file = File.Open(path + ".gif", FileMode.OpenOrCreate);
-                animatedImage.SaveAsGif(file, new GifEncoder());
-                file.Close();
 
                 var netPattern = new Image<Rgba32>(10*2*dataFramesCount, 1000);
                 netPattern.Mutate(ctx => ctx.Fill(Rgba32.WhiteSmoke));
                 var inputPattern = new Image<Rgba32>(10 * 2 * dataFramesCount, 1000);
                 inputPattern.Mutate(ctx => ctx.Fill(Rgba32.WhiteSmoke));
-                for (int i = 0; i < dataFramesCount*2; i++)
+                for (int i = 0; i < dataFramesCount; i++)
                 {
-                    Complex[] frame1 = new Complex[240];
-                    Complex[] frame2 = new Complex[240];
+                    Complex[] frame1 = new Complex[framesize];
+                    Complex[] frame2 = new Complex[framesize];
 
-                    for (int j = 0; j < 240; j++)
+                    for (int j = 0; j < framesize; j++)
                     {
                         try
                         {
-                            frame1[j] = data[120 * i + j];
+                            frame1[j] = data[framesize * i + j];
                         }
                         catch
                         {
@@ -65,7 +65,7 @@ namespace Spike1
                         
                         try
                         {
-                            frame2[j] = data[120 * i + j + 15];
+                            frame2[j] = data[framesize * i + j + 10];
                         }
                         catch
                         {
@@ -74,21 +74,23 @@ namespace Spike1
                     }
                     Complex[] spectrum1 = FTT.DecimationInTime(frame1, true);
                     Complex[] spectrum2 = FTT.DecimationInTime(frame1, true);
-                    for (var j = 0; j < 240; j++)
+                    for (var j = 0; j < framesize; j++)
                     {
-                        spectrum1[j] /= 240;
-                        spectrum2[j] /= 240;
+                        spectrum1[j] /= framesize;
+                        spectrum2[j] /= framesize;
                     }
-                    var spectrum = FTT.GetJoinedSpectrum(spectrum1, spectrum2, 15, 8000);
+                    var spectrum = FTT.GetJoinedSpectrum(spectrum1, spectrum2, 10, 8000);
                     max_spect.Add(spectrum.Values.Max());
 
-                    //Создание плоскости буллевых значений высотой 240 пикселей. Каждый пиксель численно равен 6 попугаям.
+                    //Создание плоскости буллевых значений высотой 240 пикселей. Каждый пиксель численно равен stepLevel попугаям.                  
                     Dictionary<double, bool[]> map = new Dictionary<double, bool[]>();
-                    for (var j = 0; j < 240; j++)
+                    for (var j = 0; j < framesize; j++)
                     {
-                        int amp = (int)Math.Floor(spectrum.ElementAt(j).Value / 6);
-                        if (amp > 240) amp = 240;
-                        bool[] col = Enumerable.Repeat<bool>(false, 240).ToArray();
+                        var dbl = 10 * Math.Log10(spectrum.ElementAt(j).Value / maxAmp);
+                        int amp = (int)Math.Floor(dbl-dbNoize);
+                        if (dbl < dbNoize) amp = 0;
+                        if (dbl > -dbNoize) amp = -dbNoize;
+                        bool[] col = Enumerable.Repeat<bool>(false, maxPowerLevel).ToArray();
                         for (int n = 0; n < amp; n++)
                         {
                             col[n] = true;
@@ -96,21 +98,21 @@ namespace Spike1
                         map.Add(spectrum.ElementAt(j).Key, col);
                     }
 
-                    timestamp += 150;
+                    timestamp += 200;
 
                     //сохранение спектра + заброс в сеть
                     List<bool> inputs = new List<bool>();
-                    var image = new Image<Rgba32>(240, 240);
+                    var image = new Image<Rgba32>(framesize, maxPowerLevel);
                     image.Mutate(ctx => ctx.Fill(Rgba32.White));
                     int c = 0;
                     bool hasSignal = false;
                     foreach (var col in map)
                     {
-                        for (int n = 0; n < 240; n++)
+                        for (int n = 0; n < maxPowerLevel; n++)
                         {
                             if (col.Value[n])
                             {
-                                image.Mutate(ctx => ctx.Draw(Rgba32.DarkMagenta, 1, new EllipsePolygon(c, 240 - n, 1)));
+                                image.Mutate(ctx => ctx.Draw(Rgba32.DarkMagenta, 1, new EllipsePolygon(c, maxPowerLevel - n, 1)));
                                 hasSignal = true;
                             }
                             inputs.Add(col.Value[n]);
@@ -133,6 +135,8 @@ namespace Spike1
                     }
                     patternCol++;
                     framenumb++;
+                    Console.WriteLine(framenumb);
+                    Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
                     if (hasSignal) image.Save(path+"/file"+k+"/"+ framenumb + ".png");
                 }
                 netPattern.Save(path + "/patterns/" + patternCount + ".png");
