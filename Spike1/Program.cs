@@ -18,13 +18,14 @@ namespace Spike1
         static void Main(string[] args)
         {
             int framesize = 160;
+            int firstLayerLength = 50;
             var maxAmp = 50000;
             var dbNoize = -30;
             int maxPowerLevel = (int)Math.Floor(-dbNoize / 1.00);
 
             long timestamp = 100001;
             NeyroNet net = new NeyroNet();
-            net.AddLayer(new NeyroLayer(100, framesize*maxPowerLevel));
+            net.AddLayer(new NeyroLayer(firstLayerLength, framesize*maxPowerLevel));
 
             int patternCol = 0;
             int patternCount = 0;
@@ -43,9 +44,9 @@ namespace Spike1
                 int framenumb = 0;
                 Directory.CreateDirectory(path + "/file" + k);
 
-                var netPattern = new Image<Rgba32>(10*2*dataFramesCount, 1000);
+                var netPattern = new Image<Rgba32>(10*dataFramesCount, firstLayerLength*10);
                 netPattern.Mutate(ctx => ctx.Fill(Rgba32.WhiteSmoke));
-                var inputPattern = new Image<Rgba32>(10 * 2 * dataFramesCount, 1000);
+                var inputPattern = new Image<Rgba32>(10 * dataFramesCount, firstLayerLength*10);
                 inputPattern.Mutate(ctx => ctx.Fill(Rgba32.WhiteSmoke));
                 for (int i = 0; i < dataFramesCount; i++)
                 {
